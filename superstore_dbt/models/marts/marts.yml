@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: fct_sales
+    description: "Tabla de hechos (fact table) que registra las transacciones de ventas a nivel de línea de pedido, incluyendo cálculos financieros como el margen de beneficio."
+    columns:
+      - name: order_id
+        description: "Identificador del pedido. Nota: Puede no ser único porque un pedido puede tener múltiples categorías/productos."
+        tests:
+          - not_null
+      - name: order_date
+        description: "Fecha en la que se realizó el pedido."
+        tests:
+          - not_null
+      - name: customer_id
+        description: "Identificador único del cliente que realizó la compra."
+        tests:
+          - not_null
+      - name: category
+        description: "Categoría principal del producto vendido."
+      - name: sub_category
+        description: "Subcategoría específica del producto vendido."
+      - name: sales
+        description: "Monto total de la venta."
+      - name: profit
+        description: "Beneficio o ganancia obtenida de la venta."
+      - name: quantity
+        description: "Cantidad de artículos comprados en la línea de pedido."
+      - name: profit_margin
+        description: "Margen de beneficio calculado porcentualmente: (profit / sales) * 100."
+
+  - name: dim_customers
+    description: "Tabla de dimensión (dimension table) que consolida la información de los clientes y sus métricas de comportamiento de compra."
+    columns:
+      - name: customer_id
+        description: "Identificador único del cliente."
+        tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: "Nombre completo del cliente."
+      - name: segment
+        description: "Segmento comercial al que pertenece el cliente (ej. Consumer, Corporate)."
+      - name: country
+        description: "País de residencia del cliente."
+      - name: total_orders
+        description: "Número total de pedidos distintos (order_id únicos) realizados por el cliente."
+      - name: total_spent
+        description: "Suma total de dinero gastado por el cliente en todo su historial."

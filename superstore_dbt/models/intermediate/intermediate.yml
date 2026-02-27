@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_orders_aggregated
+    description: "Modelo intermedio que consolida las métricas a nivel de pedido (order_id)."
+    columns:
+      - name: order_id
+        description: "ID único del pedido. Ahora es la llave primaria de esta tabla."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "ID del cliente que realizó el pedido."
+        tests:
+          - not_null
+
+  - name: int_customer_lifespan
+    description: "Modelo intermedio que calcula la primera y última fecha de compra histórica de cada cliente."
+    columns:
+      - name: customer_id
+        description: "ID único del cliente. Es la llave primaria."
+        tests:
+          - unique
+          - not_null
+      - name: first_order_date
+        description: "Fecha en la que el cliente realizó su primer pedido."
+      - name: last_order_date
+        description: "Fecha en la que el cliente realizó su último pedido registrado."
+      - name: customer_tenure_days
+        description: "Días totales transcurridos entre la primera y la última compra del cliente."

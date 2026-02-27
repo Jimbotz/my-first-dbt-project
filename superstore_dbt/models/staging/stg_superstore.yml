@@ -1,0 +1,102 @@
+version: 2
+
+models:
+  - name: stg_superstore
+    description: "Modelo staging que limpia, estandariza nombres y asigna los tipos de datos correctos de la tabla cruda superstore proveniente de la semilla CSV."
+    columns:
+      # --- Identificadores ---
+      - name: row_id
+        description: "Identificador único de la fila en el dataset original."
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: "ID único del pedido. Un pedido puede tener múltiples filas si contiene varios productos."
+        tests:
+          - not_null
+      - name: customer_id
+        description: "ID único del cliente."
+        tests:
+          - not_null
+      - name: product_id
+        description: "ID único del producto."
+        tests:
+          - not_null
+
+      # --- Fechas ---
+      - name: order_date
+        description: "Fecha en la que se realizó el pedido."
+        tests:
+          - not_null
+      - name: ship_date
+        description: "Fecha en la que se envió el pedido."
+      - name: order_year_extracted
+        description: "Año extraído dinámicamente de order_date."
+      - name: order_month
+        description: "Mes extraído dinámicamente de order_date (1 al 12)."
+      - name: order_day_of_week
+        description: "Día de la semana extraído de order_date (0=Domingo, 6=Sábado)."
+      - name: order_year
+        description: "Año de la orden proveniente directamente de la columna original Year."
+      - name: order_weeknum
+        description: "Número de semana en el que se realizó el pedido."
+
+      # --- Información del Cliente y Geografía ---
+      - name: customer_name
+        description: "Nombre completo del cliente."
+      - name: segment
+        description: "Segmento de mercado del cliente."
+        tests:
+          - accepted_values:
+              values: ['Consumer', 'Corporate', 'Home Office']
+              config:
+                severity: warn
+      - name: city
+        description: "Ciudad donde se realizó el pedido."
+      - name: state
+        description: "Estado o provincia donde se realizó el pedido."
+      - name: country
+        description: "País del pedido."
+      - name: region
+        description: "Región geográfica."
+      - name: market
+        description: "Mercado principal en el que opera la tienda."
+      - name: market2
+        description: "Clasificación secundaria de mercado."
+
+      # --- Información del Producto ---
+      - name: category
+        description: "Categoría principal del producto (ej. Furniture, Office Supplies)."
+      - name: sub_category
+        description: "Subcategoría específica del producto."
+      - name: product_name
+        description: "Nombre descriptivo del producto."
+
+      # --- Detalles del Envío y Pedido ---
+      - name: ship_mode
+        description: "Método de envío seleccionado para el pedido."
+        tests:
+          - accepted_values:
+              values: ['Standard Class', 'Second Class', 'First Class', 'Same Day']
+              config:
+                severity: warn
+      - name: order_priority
+        description: "Nivel de prioridad asignado al pedido."
+
+      # --- Métricas Financieras y Cuantitativas ---
+      - name: sales
+        description: "Monto total de ventas para la línea de pedido. Se espera que sea mayor o igual a 0."
+        tests:
+          #- dbt_expectations.expect_column_values_to_be_between: para forzar q nunca sea negativo, esto se checa más en la documentacion yo creo
+          # min_value: 0
+          - not_null
+      - name: quantity
+        description: "Cantidad de unidades compradas."
+        tests:
+          - not_null
+      - name: discount
+        description: "Descuento aplicado al producto (formato decimal)."
+      - name: profit
+        description: "Ganancia o pérdida (margen) generada por la venta. Puede ser negativo si hubo pérdida."
+      - name: shipping_cost
+        description: "Costo de envío asociado a la línea de pedido."
